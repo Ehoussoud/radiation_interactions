@@ -46,12 +46,13 @@ Private Sub CommandButton1_Click()
         Exit Sub
      End If
     
-    
-        Dim Energie, Gammas, E  As Double
+ Unload Donnees_initiales
+ 
+    Dim Energie, Gammas, E  As Double
     Dim Z, Z1, A As Integer
     Dim Sim As Worksheet
     
-        Set Sim = Worksheets("Simulation")
+    Set Sim = Worksheets("Simulation")
     
     Dim m, C, pe, d1, d2, dt, dm, dm1, x, Dist, Distepb As Double
     Dim Elt As Integer
@@ -66,49 +67,48 @@ Private Sub CommandButton1_Click()
     Dim y, j As Integer
     
     y = 0
-    
-Energie = Donnees_initiales.TextBox1.Value
-Gammas = Donnees_initiales.TextBox2.Value
-Z = Donnees_initiales.TextBox3.Value
-A = Donnees_initiales.TextBox4.Value
-Dist = Donnees_initiales.TextBox5.Value
-    
+   
 
-Range("E7").Value = Energie
-Range("E9").Value = Gammas
-Range("E11").Value = Z
+Energie = Me.TextBox1.Value
+Gammas = Me.TextBox2.Value
+Z = Me.TextBox3.Value
+A = Me.TextBox4.Value
+Dist = Me.TextBox5.Value
+    
+Sim.Range("E7").Value = Energie
+Sim.Range("E9").Value = Gammas
+Sim.Range("E11").Value = Z
 Z1 = Z
-Range("E13").Value = A
-Range("E15").Value = Dist
+Sim.Range("E13").Value = A
+Sim.Range("E15").Value = Dist
        
     
-Unload Donnees_initiales
     
 '    Energie = InputBox("Entrez la valeur de l'energie incidente en keV", "Energie incidente")
 '
 '
-'    Range("E7").Value = Energie
+'    Sim.Range("E7").Value = Energie
 '
 '    Gammas = InputBox("Entrez le nombre de Gammas", "Nombre de Gammas")
-'    Range("E9").Value = Gammas
+'    Sim.Range("E9").Value = Gammas
 '
 '    Z = InputBox("Entrez le Numero Atomique (Z)", "Numero Atomique")
-'    Range("E11").Value = Z
+'    Sim.Range("E11").Value = Z
 '    Z1 = Z
 '
 '    A = InputBox("Entrez le nombre de masse (A)", "Nombre de masse ")
-'    Range("E13").Value = A
+'    Sim.Range("E13").Value = A
 '
 '    Dist = InputBox("Entrez la distance X en cm", "Distance X")
-'    Range("E15").Value = Dist
+'    Sim.Range("E15").Value = Dist
 
 '    Result = MsgBox("Voulez-vous ajouter un ecran?", vbYesNo + vbQuestion)
     
     Result = Me.ComboBox1.Value
     
-    Range("E20").Value = Result
+    Sim.Range("E20").Value = Result
     
-    Select Case Result
+'    Select Case Result
 
 '    If Result = Aucun Then
 '
@@ -116,19 +116,19 @@ Unload Donnees_initiales
 '
 '    ElseIf Result = Plomb Then
 
-    Case "Plomb"
+    If Result = "Plomb" Then
 
 '    Result1 = MsgBox("Voulez-vous ajouter un ecran en plomb?", vbYesNo + vbQuestion)
         
         Zpb = InputBox("Entrez le Numero Atomique (Zpb)", "Numero Atomique")
-        Range("E24").Value = Zpb
+        Sim.Range("E24").Value = Zpb
 
 
         Apb = InputBox("Entrez le nombre de masse (Apb)", "Nombre de masse ")
-        Range("E25").Value = Apb
+        Sim.Range("E25").Value = Apb
 
         Distepb = InputBox("Entrez l'épaisseur de l'écran de plomb (Distepb)", "épaisseur écran plomb")
-        Range("E26").Value = Distepb
+        Sim.Range("E26").Value = Distepb
 '     calcul de B et Gammas correspondant lorsqu'on ajoute un ecran
         Dim Bpb, Dpb, UOpb As Double
      
@@ -157,7 +157,7 @@ Unload Donnees_initiales
     
         UOpb = (0.30052 * Zpb * (bt1 * (bt2 - bt3) + bt4 - bt5)) / Apb
         Bepb = 1 + (UOpb * Distepb * CEpb * Exp(UOpb * Dpb * Distepb))
-        Range("E27").Value = Bepb
+        Sim.Range("E27").Value = Bepb
     'calcul du coefficient d'atténuation linéique'
         Alpha = E / 511
         c1 = 2 * (1 + Alpha) ^ 2 / (Alpha ^ 2 * (1 + 2 * Alpha))
@@ -170,26 +170,26 @@ Unload Donnees_initiales
         c5 = -(p1 + p2 + p3)
         c6 = Log(1 + 2 * Alpha)
         comppb = (0.30052 * Zpb * (c1 + c2 + c3 + c4 + c5 * c6)) / Apb
-        Range("E28").Value = comppb
+        Sim.Range("E28").Value = comppb
         UPB = comppb * 11.34
-        Range("E29").Value = UPB
+        Sim.Range("E29").Value = UPB
         
         Gammas = Gammas * Bepb * Exp(-UPB * Distepb)
-        Range("E30").Value = Gammas
+        Sim.Range("E30").Value = Gammas
     
 '    GoTo SuiteN
     
        
+    End If
     
-    
-   
+ 
     
 'SuiteN:
 
-    Case "Aucun"
+'    Case "Aucun"
       
     Alpha = Energie / 511
-    Range("L7").Value = Alpha
+    Sim.Range("L7").Value = Alpha
     
 
 '    Calcul du coefficient d'attenuation CE
@@ -206,7 +206,7 @@ Unload Donnees_initiales
     
     'CE = 1.12 * (E / 1000) ^ -0.498  'Mise en équation de CE
     
-    Range("L11").Value = CE
+    Sim.Range("L11").Value = CE
     
      
 '    Calcul du facteur d'accumulation B
@@ -230,37 +230,38 @@ Unload Donnees_initiales
     
     UO = (0.30052 * Z * (at1 * (at2 - at3) + at4 - at5)) / A
     
-    Range("L17").Value = UO
+    Sim.Range("L17").Value = UO
     
     B = 1 + (UO * Dist * CE * Exp(UO * D * Dist))
     
-    Range("L15").Value = B
+    Sim.Range("L15").Value = B
     
     
 '    End If
 
-    End Select
+'    End Select
     
      E = Energie
      
 '    Interactions observees
 
 ' cette ligne definit une ligne ou le programme peut se deplacer grace a la syntaxe goto suivi du nom de cette ligne
+
 ConditionE:
 
 
     
     If E >= 2000 Then 'debut de verification de la valeur de E
-        Range("O4").Value = "Effet de creation de paire"
-        Range("L20").Value = comp
-        Range("R10").Value = ""
-        Range("R12").Value = ""
-        Range("R15").Value = dt
+        Sim.Range("O4").Value = "Effet de creation de paire"
+        Sim.Range("L20").Value = comp
+        Sim.Range("R10").Value = ""
+        Sim.Range("R12").Value = ""
+        Sim.Range("R15").Value = dt
     ElseIf E <= 100 Then
         If y = 0 Then
-            Range("O4").Value = "Effet Photoelectrique"
+            Sim.Range("O4").Value = "Effet Photoelectrique"
         Else
-            Range("O4").Value = "Effet Compton + Photoelectrique"
+            Sim.Range("O4").Value = "Effet Compton + Photoelectrique"
         End If
     '   Calcul de la dose absorbee en cas d'effet photoelectrique
         Elt = 5  ' Debut iteration tableau d'Allen B effet photo
@@ -275,35 +276,37 @@ ConditionE:
                  C = Talb.Cells(Elt, 4).Value 'si oui on prend la valeur de C dans la cellule de la colonne 4
                  pe = C * E ^ -m
                  d1 = 1.6 * 10 ^ (-10) * Gammas * (E / 1000) * pe
-                 Range("R10").Value = d1
-                 Range("R12").Value = d2
+                 Sim.Range("R10").Value = d1
+                 Sim.Range("R12").Value = d2
                  dm = d1 + d2
-                 Range("R15").Value = dm1
+                 Sim.Range("R15").Value = dm1
             Case Z1 <= CInt(Talb.Cells(Elt, 2).Value) ' ici on verifie si Z est inferieur a la valeur de cellule ligne 5 et plus et colonne 2 du tableau d'Allen B.
-                Range("U21").Value = Z1
+                Sim.Range("U21").Value = Z1
                 If Z1 > CInt(Talb.Cells(5, 2).Value) Then ' si tel est le cas on verifie d'abord si Z est superieur a la valeur(6) de la 1ere cellule
                  m = (Talb.Cells(Elt - 1, 3).Value + Talb.Cells(Elt, 3).Value) / 2
                  C = (Talb.Cells(Elt - 1, 4).Value + Talb.Cells(Elt, 4).Value) / 2
                  pe = C * E ^ -m
                  d1 = 1.6 * 10 ^ (-10) * Gammas * (E / 1000) * pe
-                 Range("R10").Value = d1
-                 Range("R12").Value = d2
+                 Sim.Range("R10").Value = d1
+                 Sim.Range("R12").Value = d2
                  dm = d1 + d2
-                 Range("R15").Value = dm1
+                 Sim.Range("R15").Value = dm1
                 Else  ' sinon si Z est inferieur a la valeur (6) de la 1ere cellule le programme ne peut pas determiner Z (ex: Z=5<6)
-                 Range("R10").Value = ""
-                 Range("R12").Value = ""
-                 Range("R15").Value = ""
+                 Sim.Range("R10").Value = ""
+                 Sim.Range("R12").Value = ""
+                 Sim.Range("R15").Value = ""
                  MsgBox ("Z3 ne peut etre calcule a partir du tableau d'Allen Brodsky ")
                 End If
             Case Talb.Cells(Elt, 2).Value = "" ' ici on suppose que le programme a verifie toutes les cellules de la colonne Elements et trouve la cellule vide jusque en bas
-                Range("R10").Value = ""
-                Range("R12").Value = ""
-                Range("R15").Value = ""
+                Sim.Range("R10").Value = ""
+                Sim.Range("R12").Value = ""
+                Sim.Range("R15").Value = ""
                 MsgBox ("Z2 ne peut etre calcule a partir du tableau d'Allen Brodsky ")
         End Select
     Else
-        Range("O4").Value = "Effet Compton"
+    
+   
+        Sim.Range("O4").Value = "Effet Compton"
         Alpha = E / 511
         c1 = 2 * (1 + Alpha) ^ 2 / (Alpha ^ 2 * (1 + 2 * Alpha))
         c2 = -(1 + 3 * Alpha) / ((1 + 2 * Alpha) ^ 2)
@@ -315,14 +318,14 @@ ConditionE:
         c5 = -(p1 + p2 + p3)
         c6 = Log(1 + 2 * Alpha)
         comp = (0.30052 * Z * (c1 + c2 + c3 + c4 + c5 * c6)) / A
-        Range("L20").Value = comp
+        Sim.Range("L20").Value = comp
         Elt = 5 ' Debut iteration tableau d'Allen B effet compton
         Set Talb = Worksheets("Tableau d'Allen Brodsky")
         Talb.Activate
         Do Until Z = CInt(Talb.Cells(Elt, 2).Value) Or Z <= CInt(Talb.Cells(Elt, 2).Value) Or Talb.Cells(Elt, 2).Value = ""
         
            Elt = Elt + 1
-           'Range("U15").Value = Elt
+           'Sim.Range("U15").Value = Elt
         Loop
         Select Case True
             Case Z1 = CInt(Talb.Cells(Elt, 2).Value)
@@ -332,30 +335,30 @@ ConditionE:
                  pe = C * E ^ (-m)
                  q0 = Int(comp / (comp + pe))
                  d2 = d2 + 1.6 * 10 ^ (-13) * Gammas * E * comp
-                 Range("R10").Value = d1
-                 Range("R12").Value = d2
+                 Sim.Range("R10").Value = d1
+                 Sim.Range("R12").Value = d2
                  dm1 = d1 + d2
-                 Range("R15").Value = dm
+                 Sim.Range("R15").Value = dm
             Case Z1 <= CInt(Talb.Cells(Elt, 2).Value)
            
-                'Range("U12").Value = CInt(Talb.Cells(Elt, 2).Value)
-                'Range("U13").Value = Z1
-                'Range("U17").Value = Elt
+                'Sim.Range("U12").Value = CInt(Talb.Cells(Elt, 2).Value)
+                'Sim.Range("U13").Value = Z1
+                'Sim.Range("U17").Value = Elt
                 If Z1 > CInt(Talb.Cells(5, 2).Value) Then
                     m = (Talb.Cells(Elt - 1, 3).Value + Talb.Cells(Elt, 3).Value) / 2
                     C = (Talb.Cells(Elt - 1, 4).Value + Talb.Cells(Elt, 4).Value) / 2
                     pe = C * (E) ^ (-m)
                     q0 = Int(comp / (comp + pe))
                     d2 = d2 + 1.6 * 10 ^ (-13) * Gammas * E * comp
-                    Range("R10").Value = d1
-                    Range("R12").Value = d2
+                    Sim.Range("R10").Value = d1
+                    Sim.Range("R12").Value = d2
                     dm1 = d1 + d2
-                    Range("R15").Value = dm1
+                    Sim.Range("R15").Value = dm1
                     
                 Else
-                    Range("R10").Value = ""
-                    Range("R12").Value = ""
-                    Range("R15").Value = ""
+                    Sim.Range("R10").Value = ""
+                    Sim.Range("R12").Value = ""
+                    Sim.Range("R15").Value = ""
                     MsgBox ("Z1 ne peut etre calcule a partir du tableau d'Allen Brodsky ")
                     GoTo fin
                 End If
@@ -416,14 +419,14 @@ calculE:
           
             j = j + 1
             
-            If j = 10000 Then
+                If j = 10000 Then
                 
-                GoTo fin
-            Else
+                    GoTo fin
+                Else
                 
                 GoTo calculE
             
-            End If
+                End If
             
           End If
             
@@ -441,11 +444,11 @@ fin:
 
     Sim.Activate
     dt = dm1 * B * Exp(-UO * Dist)
-    Range("R17").Value = dt
+    Sim.Range("R17").Value = dt
     
-    Range("Q20").Value = y
-    Range("Q23").Value = j
-'   End If
+    Sim.Range("Q20").Value = y
+    Sim.Range("Q23").Value = j
+'    End If
     
  
     
@@ -462,5 +465,9 @@ Private Sub UserForm_Activate()
         .AddItem "Plomb"
                 
     End With
+    
+     
+    
+    
 End Sub
 
