@@ -1,6 +1,6 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} Donnees_initiales 
-   Caption         =   "UserForm1"
+   Caption         =   "Donnees Initiales"
    ClientHeight    =   5025
    ClientLeft      =   45
    ClientTop       =   390
@@ -102,54 +102,64 @@ Unload Donnees_initiales
 '    Dist = InputBox("Entrez la distance X en cm", "Distance X")
 '    Range("E15").Value = Dist
 
-    Result = MsgBox("Voulez-vous ajouter un ecran?", vbYesNo + vbQuestion)
+'    Result = MsgBox("Voulez-vous ajouter un ecran?", vbYesNo + vbQuestion)
+    
+    Result = Me.ComboBox1.Value
+    
+    Range("E20").Value = Result
+    
+    Select Case Result
 
-    If Result = vbNo Then
+'    If Result = Aucun Then
+'
+'        GoTo SuiteN:
+'
+'    ElseIf Result = Plomb Then
 
-   GoTo SuiteN:
+    Case "Plomb"
 
-   Else
-    Result1 = MsgBox("Voulez-vous ajouter un ecran en plomb?", vbYesNo + vbQuestion)
-    If Result1 = vbYes Then
-
-    Zpb = InputBox("Entrez le Numero Atomique (Zpb)", "Numero Atomique")
-    Range("E24").Value = Zpb
+'    Result1 = MsgBox("Voulez-vous ajouter un ecran en plomb?", vbYesNo + vbQuestion)
+        
+        Zpb = InputBox("Entrez le Numero Atomique (Zpb)", "Numero Atomique")
+        Range("E24").Value = Zpb
 
 
-    Apb = InputBox("Entrez le nombre de masse (Apb)", "Nombre de masse ")
-    Range("E25").Value = Apb
+        Apb = InputBox("Entrez le nombre de masse (Apb)", "Nombre de masse ")
+        Range("E25").Value = Apb
 
-    Distepb = InputBox("Entrez l'épaisseur de l'écran de plomb (Distepb)", "épaisseur écran plomb")
-    Range("E26").Value = Distepb
+        Distepb = InputBox("Entrez l'épaisseur de l'écran de plomb (Distepb)", "épaisseur écran plomb")
+        Range("E26").Value = Distepb
 '     calcul de B et Gammas correspondant lorsqu'on ajoute un ecran
-     Dim Bpb, Dpb, UOpb As Double
+        Dim Bpb, Dpb, UOpb As Double
      
    
-    Alpha = Energie / 511
-    Dim CEpb As Double
-    E = Energie
-    If E >= 400 Or E <= 1000 Then
-    CEpb = 0.21 * Log(E / 1000) + 0.399 'Mise en équation de CEpb
-    Else
-    If E >= 1500 Or E <= 10000 Then
-    CEpb = 0.529 * Exp(-0.186 * (E / 1000)) 'Mise en équation de CEpb
+        Alpha = Energie / 511
+        Dim CEpb As Double
+        E = Energie
+        If E >= 400 Or E <= 1000 Then
+            CEpb = 0.21 * Log(E / 1000) + 0.399 'Mise en équation de CEpb
+        Else
+            If E >= 1500 Or E <= 10000 Then
+                CEpb = 0.529 * Exp(-0.186 * (E / 1000)) 'Mise en équation de CEpb
     
-    End If
-    End If
-    If E >= 400 Or E <= 1000 Then
-    Dpb = 0.019 * (E / 1000) - 0.051 'Mise en équation de Dpb
-    End If
-    bt1 = (1 + Alpha) / (Alpha ^ 2)
-    bt2 = 2 * (1 + Alpha) / (1 + 2 * Alpha)
-    bt3 = (Log(1 + 2 * Alpha)) / (Alpha)
-    bt4 = (Log(1 + 2 * Alpha)) / (2 * Alpha)
-    bt5 = ((1 + 3 * Alpha)) / (1 + 2 * Alpha) ^ 2
+            End If
+        End If
     
-    UOpb = (0.30052 * Zpb * (bt1 * (bt2 - bt3) + bt4 - bt5)) / Apb
-    Bepb = 1 + (UOpb * Distepb * CEpb * Exp(UOpb * Dpb * Distepb))
-    Range("E27").Value = Bepb
+        If E >= 400 Or E <= 1000 Then
+            Dpb = 0.019 * (E / 1000) - 0.051 'Mise en équation de Dpb
+        End If
+        
+        bt1 = (1 + Alpha) / (Alpha ^ 2)
+        bt2 = 2 * (1 + Alpha) / (1 + 2 * Alpha)
+        bt3 = (Log(1 + 2 * Alpha)) / (Alpha)
+        bt4 = (Log(1 + 2 * Alpha)) / (2 * Alpha)
+        bt5 = ((1 + 3 * Alpha)) / (1 + 2 * Alpha) ^ 2
+    
+        UOpb = (0.30052 * Zpb * (bt1 * (bt2 - bt3) + bt4 - bt5)) / Apb
+        Bepb = 1 + (UOpb * Distepb * CEpb * Exp(UOpb * Dpb * Distepb))
+        Range("E27").Value = Bepb
     'calcul du coefficient d'atténuation linéique'
-    Alpha = E / 511
+        Alpha = E / 511
         c1 = 2 * (1 + Alpha) ^ 2 / (Alpha ^ 2 * (1 + 2 * Alpha))
         c2 = -(1 + 3 * Alpha) / ((1 + 2 * Alpha) ^ 2)
         c3 = -((1 + Alpha) * (2 * Alpha ^ 2 - 2 * Alpha - 1)) / (Alpha ^ 2 * (1 + 2 * Alpha) ^ 2)
@@ -164,17 +174,19 @@ Unload Donnees_initiales
         UPB = comppb * 11.34
         Range("E29").Value = UPB
         
-    Gammas = Gammas * Bepb * Exp(-UPB * Distepb)
-    Range("E30").Value = Gammas
-    GoTo SuiteN
+        Gammas = Gammas * Bepb * Exp(-UPB * Distepb)
+        Range("E30").Value = Gammas
+    
+'    GoTo SuiteN
     
        
     
     
    
     
-SuiteN:
+'SuiteN:
 
+    Case "Aucun"
       
     Alpha = Energie / 511
     Range("L7").Value = Alpha
@@ -225,7 +237,9 @@ SuiteN:
     Range("L15").Value = B
     
     
-    End If
+'    End If
+
+    End Select
     
      E = Energie
      
@@ -431,7 +445,7 @@ fin:
     
     Range("Q20").Value = y
     Range("Q23").Value = j
-   End If
+'   End If
     
  
     
@@ -444,10 +458,9 @@ Private Sub UserForm_Activate()
     With Me.ComboBox1
         .Clear
         .AddItem ""
-        .AddItem "Pas d'ecran"
+        .AddItem "Aucun"
         .AddItem "Plomb"
-        .AddItem "Beton"
-        
+                
     End With
 End Sub
 
